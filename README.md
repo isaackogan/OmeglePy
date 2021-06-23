@@ -1,11 +1,11 @@
 OmeglePy
 ==================
-Python API for Omegle webchat. Compatible with Python3.
+Python API for Omegle's WebChat/API. Compatible with Python3.
 
 Installation
 ==================
 ```sh
-PyPi Coming Soon (Clone the repository)
+pip3 install -m OmeglePy
 ```
 
 Usage
