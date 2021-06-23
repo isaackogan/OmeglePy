@@ -11,7 +11,8 @@ PyPi Coming Soon (Clone the repository)
 Usage
 ==================
 ``` python
-from pyomegle import OmegleClient, OmegleHandler
+from OmeglePy.client import OmegleClient
+from OmeglePy.events import OmegleHandler
 
 """
     Omegle inteface for python
