@@ -1,4 +1,4 @@
-Pyomegle
+OmeglePy
 ==================
 Python API for Omegle webchat. Compatible with Python3.
 
