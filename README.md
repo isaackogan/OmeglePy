@@ -5,7 +5,7 @@ Python API for Omegle webchat. Compatible with Python3.
 Installation
 ==================
 ```sh
-$ pip install pyomegle
+PyPi Coming Soon (Clone the repository)
 ```
 
 Usage
@@ -22,7 +22,7 @@ from pyomegle import OmegleClient, OmegleHandler
         exits chat session
 """
 
-h = OmegleHandler(loop=True)            # session loop
+h = OmegleHandler(debug=False)            # session loop
 c = OmegleClient(h, wpm=47, lang='en')  # 47 words per minute
 c.start()
 
@@ -90,4 +90,4 @@ List of client methods
 
 License
 ---------------------
-pyomegle is released under the [MIT License](LICENSE).
+OmeglePy is released under the [MIT License](LICENSE).
