@@ -12,7 +12,7 @@ setup(
   author = 'Isaac Kogan (Originally Elia Scotto)',                  
   author_email = 'isaacikogan@gmail.com',      
   url = 'https://github.com/isaackogan/OmeglePy',   
-  download_url = 'https://github.com/user/OmeglePy/archive/v_01.tar.gz',  
+  download_url = 'https://github.com/isaackogan/OmeglePy/archive/refs/tags/v_1.0.tar.gz',  
   keywords = ['OmeglePy', 'Omegle', 'Omgle-Bot', 'Bot'],  
   install_requires=[            
           'mechanize',
