@@ -91,4 +91,4 @@ List of client methods
 
 License
 ---------------------
-OmeglePy is released under the [MIT License](LICENSE).
+OmeglePy is released under the [MIT License](LICENSE.md).
