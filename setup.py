@@ -11,7 +11,7 @@ setup(name='OmeglePy',
       author_email='isaacikogan@gmail.com',
       url='https://github.com/elias94/pyomegle',
       license='MIT',
-      packages=['pyomegle'],
+      packages=['OmeglePy'],
       install_requires=['mechanize'],
       classifiers=[
         'Development Status :: 5 - Production/Stable',
