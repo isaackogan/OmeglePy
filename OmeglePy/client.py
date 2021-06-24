@@ -18,11 +18,12 @@ class OmegleClient(Omegle):
             wpm=42,
             random_id=None,
             lang='en',
-            topics=(),
+            topics=None,
+            debug=False
     ):
 
         super(OmegleClient, self).__init__(
-            event_handler, event_first, sp_id, random_id, topics, lang, event_delay
+            event_handler, event_first, sp_id, random_id, topics, lang, event_delay, debug
         )
 
         self.wpm = wpm
@@ -42,6 +43,10 @@ class OmegleClient(Omegle):
         This is great for avoiding spam-bot blocks by Omegle.
 
         """
+
+        # Can't send nothing
+        if len(message.strip()) == 0:
+            return
 
         # Calculate required time for typing
         typing_time: float = self._typing_time(len(message))
@@ -64,7 +69,7 @@ class OmegleClient(Omegle):
 
         # Typing
         super(OmegleClient, self).typing()
-        print('You are currently typing...')
+        print(AnsiColours.fgWhite + 'You are currently typing...' + AnsiColours.reset)
 
     def send(self, message):
         """
@@ -73,8 +78,13 @@ class OmegleClient(Omegle):
         """
 
         # Sending
-        super(OmegleClient, self).send(message)
-        print(f'{AnsiColours.fgBrightCyan}You:{AnsiColours.reset} {message}')
+        res = super(OmegleClient, self).send(message)
+
+        if res is None:
+            print(AnsiColours.fgWhite + "Failed to send message, timed out" + AnsiColours.reset)
+            return
+
+        print(AnsiColours.fgBlue + "You: " + AnsiColours.reset + message)
 
     def next(self):
         """
@@ -84,3 +94,10 @@ class OmegleClient(Omegle):
         # Disconnect & start a new connection
         self.disconnect()
         self.start()
+
+    def set_topics(self, topics: list = None):
+        """
+        Update your topics
+
+        """
+        self.topics = topics

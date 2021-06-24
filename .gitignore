@@ -1,2 +1,5 @@
 test.py
 .idea
+dist/
+OmeglePy.egg-info
+venv/

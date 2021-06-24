@@ -23,25 +23,47 @@ class Omegle(object):
     DISCONNECT_URL =        'http://%s/disconnect'
     SEND_URL =              'http://%s/send'
 
-    def __init__(self, events_handler, firstevents=1, spid='', random_id=None, topics=[], lang='en', event_delay=3):
-        self.events_handler = events_handler
-        self.firstevents = firstevents
-        self.spid = spid
-        self.topics = topics
-        self.lang = lang
+    def __init__(
+            self,
+            event_handler,
+            event_first=1,
+            sp_id='',
+            random_id=None,
+            topics=None,
+            lang='en',
+            event_delay=3,
+            debug=False,
+            request_timeout=5
+    ):
+
+        # Event Setup
+        self.event_handler = event_handler
+        self.event_first = event_first
         self.event_delay = event_delay
+
+        # General Setup
         self.random_id = random_id or self._randID(8)
-
-        self.connected = False
-
         self.server = random.choice(self.SERVER_LIST)
+        self.sp_id = sp_id
+        self.connected = False
         self.client_id = None
         self.connected = False
+
+        # Configuration
+        self.topics = topics
+        self.lang = lang
+        self.debug = debug
+        self.request_timeout = request_timeout
+
+        # Browser Setup
         self.browser = mechanize.Browser()
-        self.browser.addheaders = []
+        self.browser.addheaders += [
+            ('Accept-Language', "en-US,en;q=0.8"),
+            ("Referer", "https://www.omegle.com/"),
+        ]
 
         # Call additional setup
-        self.events_handler.setup(self)
+        self.event_handler.setup(self, debug)
 
     @staticmethod
     def _randID(length):
@@ -53,13 +75,22 @@ class Omegle(object):
         return ''.join([random.choice('23456789ABCDEFGHJKLMNPQRSTUVWXYZ') for _ in range(length)])
 
     def handle_events(self, events):
-        """ Handle the chat events """
+        """
+        Handle the chat events
+
+        """
+
         for event in events:
+
             try:
+
                 self._event_selector(event)
+
             except TypeError as e:
-                print (e)
-                print ('DEBUG', event)
+
+                print(e)
+                print('DEBUG', event)
+
             continue
 
     def _event_selector(self, event):
@@ -71,36 +102,36 @@ class Omegle(object):
         event_type = event[0]
 
         if event_type == 'waiting':
-            self.events_handler.waiting()
+            self.event_handler.waiting()
         elif event_type == 'typing':
-            self.events_handler.typing()
+            self.event_handler.typing()
         elif event_type == 'connected':
             self.connected = True
-            self.events_handler.connected()
+            self.event_handler.connected()
         elif event_type == 'gotMessage':
             message = event[1]
-            self.events_handler.message(message)
+            self.event_handler.message(message)
         elif event_type == 'commonLikes':
             likes = event[1]
-            self.events_handler.common_likes(likes)
+            self.event_handler.common_likes(likes)
         elif event_type == 'stoppedTyping':
-            self.events_handler.stopped_typing()
+            self.event_handler.stopped_typing()
         elif event_type == 'strangerDisconnected':
             self.disconnect()
-            self.events_handler.disconnected()
+            self.event_handler.disconnected()
         elif event_type == 'recaptchaRequired':
-            self.events_handler.captcha_required()
+            self.event_handler.captcha_required()
         elif event_type == 'recaptchaRejected':
-            self.events_handler.captcha_rejected()
+            self.event_handler.captcha_rejected()
         elif event_type == 'serverMessage':
             message = event[1]
-            self.events_handler.server_message(message)
+            self.event_handler.server_message(message)
         elif event_type == 'statusInfo':
             status = event[1]
-            self.events_handler.status_info(status)
+            self.event_handler.status_info(status)
         elif event_type == 'identDigests':
             digests = event[1]
-            self.events_handler.ident_digest(digests)
+            self.event_handler.ident_digest(digests)
         else:
             print('Unhandled event: %s' % event)
 
@@ -116,8 +147,7 @@ class Omegle(object):
         if data:
             data = urllib.parse.urlencode(data)
 
-        response = self.browser.open(url, data)
-
+        response = self.browser.open(url, data, timeout=self.request_timeout)
         return response
 
     def _attempt_request(self, url: str, data: dict = None) -> Any:
@@ -145,15 +175,20 @@ class Omegle(object):
         data: dict = {'id': self.client_id}
 
         try:
-            response = self.__request(url, data)
-            data = json.load(response)
+
+            if self.debug:
+                print("\033[31m" + '-> Outbound Request', url + "\033[0m")
+                response = self.__request(url, data)
+                data = json.load(response)
+                print("\033[34m" + '<- Inbound Reply', str(data) + "\033[0m")
+            else:
+                response = self.__request(url, data)
+                data = json.load(response)
 
         except Exception:
-
             return False
 
         if data:
-
             self.handle_events(data)
 
         return True
@@ -177,17 +212,15 @@ class Omegle(object):
         Begin a new conversation
 
         """
-
-        url: str = self.START_URL % (self.server, self.firstevents, self.spid, self.random_id, self.lang)
+        url: str = self.START_URL % (self.server, self.event_first, self.sp_id, self.random_id, self.lang)
 
         # Add topics to the URL
         if self.topics:
-
             # noinspection PyUnresolvedReferences
             url += '&' + urllib.parse.urlencode({'topics': json.dumps(self.topics)})
 
 
-        self.thread: EventThread = EventThread(self, url)
+        self.thread: EventThread = EventThread(self, url, debug=self.debug)
         self.thread.start()
 
         return self.thread

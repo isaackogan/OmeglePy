@@ -6,7 +6,7 @@ from urllib.request import Request
 
 import mechanize
 
-from OmeglePy.utils import starts_with, AnsiColours
+from OmeglePy.utils import AnsiColours
 
 
 class EventThread(threading.Thread):
@@ -14,7 +14,7 @@ class EventThread(threading.Thread):
     Event thread class for handling the main loop
     """
 
-    def __init__(self, instance, start_url: str, proxy: str = None):
+    def __init__(self, instance, start_url: str, proxy: str = None, debug=False):
         threading.Thread.__init__(self)
 
         # Omegle instance
@@ -26,14 +26,17 @@ class EventThread(threading.Thread):
         # Set a proxy (optional)
         self.proxy = proxy
 
+        # Set debug status
+        self.debug = debug
+
         # Determine proxy type
         try:
-            self.proxy_type: str = 'https' if starts_with(proxy, 'https://') else 'http'
+            self.proxy_type: str = 'https' if proxy.startswith('https://') else 'http'
         except:
             self.proxy_type = None
 
         # ???
-        self._stop = threading.Event()
+        self.stop = threading.Event()
 
     def run(self):
         """
@@ -51,9 +54,17 @@ class EventThread(threading.Thread):
 
         try:
 
-            # Get Response
-            response = self.instance.browser.open(request)
-            data: dict = json.load(response)
+            if self.debug:
+
+                print(AnsiColours.fgRed + '-> Outbound Request', request.full_url + AnsiColours.reset)
+                response = self.instance.browser.open(request)
+                data: dict = json.load(response)
+                print(AnsiColours.fgBlue + '<- Inbound Reply', str(data) + AnsiColours.reset)
+
+            else:
+
+                response = self.instance.browser.open(request)
+                data: dict = json.load(response)
 
         except Exception as e:
 
@@ -78,7 +89,7 @@ class EventThread(threading.Thread):
         while not self.instance.connected:
             self.instance.events_manager()
 
-            if self._stop.isSet():
+            if self.stop.isSet():
                 self.instance.disconnect()
                 return
 
@@ -91,7 +102,7 @@ class EventThread(threading.Thread):
             self.instance.events_manager()
 
             # If they request to stop
-            if self._stop.isSet():
+            if self.stop.isSet():
 
                 # Disconnect
                 self.instance.disconnect()
@@ -106,7 +117,7 @@ class EventThread(threading.Thread):
 
         """
 
-        self._stop.set()
+        self.stop.set()
 
 
 
@@ -120,21 +131,20 @@ class OmegleHandler:
     RECAPTCHA_IMAGE_URL: str = 'http://www.google.com/recaptcha/api/image?c=%s'
     recaptcha_challenge_regex: str = re.compile(r"challenge\s*:\s*'(.+)'")
 
-    def __init__(self, debug=False):
+    def __init__(self):
 
-        # Debug
-        self.debug = debug
-
-        # Omegle instance
+        # Declare variables
         self.omegle = None
+        self.debug = None
 
-    def setup(self, omegle):
+    def setup(self, omegle, debug=False):
         """
         Called by omegle class to allow interaction through this class
 
         """
 
         self.omegle = omegle
+        self.debug = debug
 
     @staticmethod
     def waiting():
@@ -142,7 +152,6 @@ class OmegleHandler:
         Called when waiting for a person to connect
 
         """
-
         print('Looking for someone you can chat with...')
 
     @staticmethod
@@ -152,7 +161,7 @@ class OmegleHandler:
 
         """
 
-        print("You're now chatting with a random stranger. Say hi!")
+        print(AnsiColours.fgWhite + "You're now chatting with a random stranger. Say hi!" + AnsiColours.reset)
 
     @staticmethod
     def typing():
@@ -161,7 +170,7 @@ class OmegleHandler:
 
         """
 
-        print('Stranger is typing...')
+        print(AnsiColours.fgWhite + 'Stranger is typing...' + AnsiColours.reset)
 
     @staticmethod
     def stopped_typing():
@@ -170,7 +179,7 @@ class OmegleHandler:
 
         """
 
-        print('Stranger has stopped typing.')
+        print(AnsiColours.fgWhite + 'Stranger has stopped typing.' + AnsiColours.reset)
 
     @staticmethod
     def message(message):
@@ -178,8 +187,7 @@ class OmegleHandler:
         Called when a message is received from the connected stranger
 
         """
-
-        print(f"{AnsiColours.fgBrightMagenta}Stranger:{AnsiColours.reset} {message}")
+        print(AnsiColours.fgRed + "Stranger: " + AnsiColours.reset + message)
 
     @staticmethod
     def common_likes(likes):
@@ -188,7 +196,7 @@ class OmegleHandler:
 
         """
 
-        print('You both like %s.' % ', '.join(likes))
+        print(AnsiColours.fgWhite + 'You both like %s.' % ', '.join(likes) + AnsiColours.reset)
 
     def disconnected(self):
         """
@@ -196,7 +204,7 @@ class OmegleHandler:
 
         """
 
-        print('Stranger has disconnected.')
+        print(AnsiColours.fgWhite + 'Stranger has disconnected.' + AnsiColours.reset)
         self.omegle.start()
 
     @staticmethod
@@ -217,7 +225,7 @@ class OmegleHandler:
         if not self.debug:
             return
 
-        print('Status update', status)
+        print(AnsiColours.fgWhite + 'Status update' + str(status) + AnsiColours.reset)
 
     def ident_digest(self, digests):
         """
@@ -228,7 +236,7 @@ class OmegleHandler:
         if not self.debug:
             return
 
-        print('Identity digest', digests)
+        print(AnsiColours.fgWhite + 'Identity digest', digests + AnsiColours.reset)
 
     def captcha_required(self):
         """

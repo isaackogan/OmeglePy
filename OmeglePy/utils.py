@@ -1,12 +1,3 @@
-def starts_with(item: str, check: str):
-    """
-    Check if a string starts with a substring
-
-    """
-
-    return item[:len(check)] == check
-
-
 
 class AnsiColours:
     """
