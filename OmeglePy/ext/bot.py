@@ -1,4 +1,9 @@
+import asyncio
+import functools
 import inspect
+import time
+from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Process
 from typing import List, Tuple, Any
 
 from OmeglePy.client import OmegleClient
@@ -8,17 +13,17 @@ from OmeglePy.ext.commands import Context, Command
 
 class Bot:
 
-    def __init__(self, prefix: str = "/", **kwargs):
+    def __init__(self, prefix: str = "/", auto_skip: int = 0, auto_message: list or str = '', auto_message_delay: float = 0, proxy=None, **kwargs):
 
         # Create the stuff we need
-        self.handler = OmegleHandler()
-        self.client = OmegleClient(self.handler, **kwargs)
+        self.handler = OmegleHandler(auto_message=auto_message, auto_message_delay=auto_message_delay)
+        self.client = OmegleClient(self.handler, proxy=proxy, **kwargs)
 
-        # Set the prefix
+        # Set attributes
+        self.session_time = 0
         self.prefix = prefix
-
-        # Create the mappings
         self.mappings = dict()
+        self.auto_skip = auto_skip
 
     @staticmethod
     def add_command(bot, function):
@@ -109,6 +114,10 @@ class Bot:
 
         self.__setup()
         self.client.start()
+
+        while True:
+            time.sleep(15)
+            self.client.next()
 
         while True:
 

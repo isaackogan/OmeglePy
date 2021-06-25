@@ -19,11 +19,34 @@ class OmegleClient(Omegle):
             random_id=None,
             lang='en',
             topics=None,
-            debug=False
+            debug=False,
+            proxy=None
     ):
 
+        if debug:
+            print(
+                f"Handler: '{event_handler}'\n"
+                f"First: '{event_first}'\n"
+                f"Delay: '{event_delay}'\n"
+                f"sp_id = '{sp_id}'\n"
+                f"wpm = '{wpm}'\n"
+                f"random_id = '{random_id}'\n"
+                f"lang = '{lang}'\n"
+                f"topic = '{topics}'\n"
+                f"debug = '{debug}'"
+            )
+
         super(OmegleClient, self).__init__(
-            event_handler, event_first, sp_id, random_id, topics, lang, event_delay, debug
+            event_handler=event_handler,
+            event_first=event_first,
+            event_delay=event_delay,
+            sp_id=sp_id,
+            random_id=random_id,
+            topics=topics,
+            lang=lang,
+            debug=debug,
+            proxy=proxy
+
         )
 
         self.wpm = wpm
@@ -84,7 +107,7 @@ class OmegleClient(Omegle):
             print(AnsiColours.fgWhite + "Failed to send message, timed out" + AnsiColours.reset)
             return
 
-        print(AnsiColours.fgBlue + "You: " + AnsiColours.reset + message)
+        print(AnsiColours.fgBlue + "You: " + AnsiColours.reset + str(message))
 
     def next(self):
         """

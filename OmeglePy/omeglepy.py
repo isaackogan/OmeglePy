@@ -7,6 +7,8 @@ import urllib
 import random
 import json
 
+from mechanize import Request
+
 from OmeglePy.events import EventThread
 
 
@@ -23,6 +25,25 @@ class Omegle(object):
     DISCONNECT_URL =        'http://%s/disconnect'
     SEND_URL =              'http://%s/send'
 
+
+    @staticmethod
+    def get_headers(url: str):
+
+        OMEGLE_TLD = '.com'
+
+        return [
+
+            ('Accept-Language', "en-US,en;q=0.8"),
+            ("Referer", "https://www.omegle.com/"),
+            ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"),
+            ("authority", "https://www.omegle.com"),
+            ("path", url[url.find(OMEGLE_TLD) + len(OMEGLE_TLD):].strip()),
+            ("Accept-Encoding", "gzip, deflate"),
+            ("Connection", "keep-alive"),
+            ("Host", url[url.find("//") + 2:url.find(OMEGLE_TLD) + len(OMEGLE_TLD)]),
+            ("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36")
+        ]
+
     def __init__(
             self,
             event_handler,
@@ -33,7 +54,8 @@ class Omegle(object):
             lang='en',
             event_delay=3,
             debug=False,
-            request_timeout=5
+            request_timeout=5,
+            proxy=None
     ):
 
         # Event Setup
@@ -54,13 +76,10 @@ class Omegle(object):
         self.lang = lang
         self.debug = debug
         self.request_timeout = request_timeout
+        self.proxy = proxy
 
         # Browser Setup
         self.browser = mechanize.Browser()
-        self.browser.addheaders += [
-            ('Accept-Language', "en-US,en;q=0.8"),
-            ("Referer", "https://www.omegle.com/"),
-        ]
 
         # Call additional setup
         self.event_handler.setup(self, debug)
@@ -88,7 +107,7 @@ class Omegle(object):
 
             except TypeError as e:
 
-                print(e)
+                raise e
                 print('DEBUG', event)
 
             continue
@@ -147,7 +166,21 @@ class Omegle(object):
         if data:
             data = urllib.parse.urlencode(data)
 
-        response = self.browser.open(url, data, timeout=self.request_timeout)
+        # Add the headers
+        self.browser.addheaders = self.get_headers(url)
+        self.browser.set_handle_robots(False)
+
+        # Build the request
+        request: Request = mechanize.Request(url)
+
+        # Add a proxy (optional)
+        if self.thread.proxy is not None:
+            request.set_proxy(self.thread.proxy, self.thread.proxy_type)
+            self.browser.set_pro
+
+        # Make the request
+        response = self.browser.open(request, data, timeout=self.request_timeout)
+
         return response
 
     def _attempt_request(self, url: str, data: dict = None) -> Any:
@@ -219,8 +252,7 @@ class Omegle(object):
             # noinspection PyUnresolvedReferences
             url += '&' + urllib.parse.urlencode({'topics': json.dumps(self.topics)})
 
-
-        self.thread: EventThread = EventThread(self, url, debug=self.debug)
+        self.thread: EventThread = EventThread(self, url, debug=self.debug, proxy=self.proxy)
         self.thread.start()
 
         return self.thread

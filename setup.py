@@ -15,7 +15,7 @@ setup(
     download_url='https://github.com/isaackogan/OmeglePy/archive/refs/tags/v_1.0.tar.gz',
     keywords=['OmeglePy', 'Omegle', 'Omgle-Bot', 'Bot'],
     install_requires=[
-        'mechanize',
+        'mechanize', 'asyncio', 'aiohttp'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',  # "3 - Alpha", "4 - Beta", "5 - Production/Stable"

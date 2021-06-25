@@ -1,4 +1,5 @@
 import json
+import random
 import re
 import threading
 import time
@@ -31,7 +32,7 @@ class EventThread(threading.Thread):
 
         # Determine proxy type
         try:
-            self.proxy_type: str = 'https' if proxy.startswith('https://') else 'http'
+            self.proxy_type: str = 'http'
         except:
             self.proxy_type = None
 
@@ -45,12 +46,14 @@ class EventThread(threading.Thread):
         """
 
         # Create a request
+        self.instance.browser.addheaders = self.instance.get_headers(self.start_url)
+        self.instance.browser.set_handle_robots(False)
         request: Request = mechanize.Request(self.start_url)
 
         # Add a proxy (optional)
         if self.proxy is not None:
             request.set_proxy(self.proxy, self.proxy_type)
-            print(f'Set proxy {self.proxy} of type {self.proxy_type}')
+
 
         try:
 
@@ -67,7 +70,7 @@ class EventThread(threading.Thread):
                 data: dict = json.load(response)
 
         except Exception as e:
-
+            raise e
             # Fail to get response
             print('Failed to initialize:', str(e))
             return
@@ -131,11 +134,13 @@ class OmegleHandler:
     RECAPTCHA_IMAGE_URL: str = 'http://www.google.com/recaptcha/api/image?c=%s'
     recaptcha_challenge_regex: str = re.compile(r"challenge\s*:\s*'(.+)'")
 
-    def __init__(self):
+    def __init__(self, auto_message: list or str = None, auto_message_delay: float = 0):
 
         # Declare variables
         self.omegle = None
         self.debug = None
+        self.auto_message: list or str = auto_message
+        self.auto_message_delay: float = auto_message_delay
 
     def setup(self, omegle, debug=False):
         """
@@ -154,14 +159,26 @@ class OmegleHandler:
         """
         print('Looking for someone you can chat with...')
 
-    @staticmethod
-    def connected():
+    def connected(self):
         """
         Called when we found a person to connect to
 
         """
 
         print(AnsiColours.fgWhite + "You're now chatting with a random stranger. Say hi!" + AnsiColours.reset)
+
+        time.sleep(1.5)
+
+        if self.auto_message:
+            message = self.auto_message
+
+            if type(self.auto_message) == list:
+                message = random.choice(message)
+
+            if self.auto_message_delay < 0:
+                time.sleep(self.auto_message_delay)
+
+            self.omegle.send(message)
 
     @staticmethod
     def typing():

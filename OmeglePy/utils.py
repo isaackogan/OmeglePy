@@ -1,3 +1,8 @@
+import asyncio
+import random
+
+import aiohttp
+
 
 class AnsiColours:
     """
@@ -64,4 +69,82 @@ class AnsiColors(AnsiColours):
     """
 
     pass
+
+
+class ProxyChecking:
+
+    SERVER_LIST = [f'front{n}.omegle.com' for n in range(1, 33)]
+
+    def __init__(self, input_file: str, output_file: str, ssl: bool = False):
+        self.input_file = input_file
+        self.output_file = output_file
+
+        # Proxies in 123.231.212:1212 format
+        self.raw_proxies = [proxy.strip() for proxy in open('proxies.txt').read().strip().split('\n')]
+
+        # Proxy Type
+        proxy_type: str = 'https' if ssl else 'http'
+        self.formatted_proxies = [proxy_type + "://" + proxy for proxy in self.raw_proxies]
+
+    async def check_proxy(self, proxy: str, working_file: str):
+        """
+        Check a proxy
+
+        """
+
+        async with aiohttp.ClientSession() as session:
+            print(AnsiColours.fgWhite + 'Testing', proxy + AnsiColours.reset)
+            check_url: str = "http://" + random.choice(self.SERVER_LIST) + "/start?caps=recaptcha2,t&firstevents=1&spid=&randid=T7RY4HL6&lang=en"
+
+            # Try in-case of timeout
+            try:
+                async with session.get(check_url, proxy=proxy) as response:
+                    data: dict = await response.json()
+                    keys: list = list(data.keys())
+
+                    # Parse events
+                    if 'events' in keys:
+
+                        if data['events'][0][0] == 'antinudeBanned':
+                            proxy_status = 'Anti-Nude Banned'
+
+                        elif data['events'][0][0] == 'recaptchaRequired':
+                            proxy_status = 'Captcha Blocked'
+
+
+                        else:
+
+                            # Working
+                            print(AnsiColours.bgGreen + proxy + str(data) + AnsiColours.reset)
+                            with open(working_file, 'a') as file:
+
+                                # Get rid of start
+                                proxy = proxy.replace("https://", "").replace("http://", "")
+
+                                file.write(proxy + "\n")
+                                file.close()
+
+                            return
+
+                    # No events? Blocked
+                    else:
+                        proxy_status = 'Anti-VPN Blocked'
+
+            except Exception as e:
+
+                print(AnsiColours.fgWhite + 'Failed with Exception (Likely connectivity issue)', proxy, str(e) + AnsiColours.reset)
+                return
+
+            print(AnsiColours.fgWhite + 'Failed', proxy, proxy_status + AnsiColours.reset)
+
+    def check_proxy_list(self):
+
+        loop = asyncio.get_event_loop()
+
+        for proxy in self.formatted_proxies:
+            loop.create_task(self.check_proxy(proxy, self.output_file))
+
+
+if __name__ == '__main__':
+    c = ProxyChecking()
 
