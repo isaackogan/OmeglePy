@@ -16,7 +16,7 @@ class Bot:
     def __init__(self, prefix: str = "/", auto_skip: int = 0, auto_message: list or str = '', auto_message_delay: float = 0, proxy=None, **kwargs):
 
         # Create the stuff we need
-        self.handler = OmegleHandler(auto_message=auto_message, auto_message_delay=auto_message_delay)
+        self.handler = kwargs['handler'] if 'handler' in kwargs.keys() else OmegleHandler(auto_message=auto_message, auto_message_delay=auto_message_delay)
         self.client = OmegleClient(self.handler, proxy=proxy, **kwargs)
 
         # Set attributes
