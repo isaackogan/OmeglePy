@@ -7,6 +7,7 @@ import urllib
 import random
 import json
 
+import requests
 from mechanize import Request
 
 from OmeglePy.events import EventThread
@@ -31,18 +32,18 @@ class Omegle(object):
 
         OMEGLE_TLD = '.com'
 
-        return [
+        return {
 
-            ('Accept-Language', "en-US,en;q=0.8"),
-            ("Referer", "https://www.omegle.com/"),
-            ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"),
-            ("authority", "https://www.omegle.com"),
-            ("path", url[url.find(OMEGLE_TLD) + len(OMEGLE_TLD):].strip()),
-            ("Accept-Encoding", "gzip, deflate"),
-            ("Connection", "keep-alive"),
-            ("Host", url[url.find("//") + 2:url.find(OMEGLE_TLD) + len(OMEGLE_TLD)]),
-            ("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36")
-        ]
+            'Accept-Language': "en-US:en;q=0.8",
+            "Referer": "https://www.omegle.com/",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "authority": "https://www.omegle.com",
+            "path": url[url.find(OMEGLE_TLD) + len(OMEGLE_TLD):].strip(),
+            "Accept-Encoding": "gzip, deflate",
+            "Connection": "keep-alive",
+            "Host": url[url.find("//") + 2:url.find(OMEGLE_TLD) + len(OMEGLE_TLD)],
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+    }
 
     def __init__(
             self,
@@ -118,6 +119,7 @@ class Omegle(object):
 
         """
 
+        print(event, 'g')
         event_type = event[0]
 
         if event_type == 'waiting':
@@ -176,7 +178,7 @@ class Omegle(object):
         # Add a proxy (optional)
         if self.thread.proxy is not None:
             request.set_proxy(self.thread.proxy, self.thread.proxy_type)
-            self.browser.set_pro
+
 
         # Make the request
         response = self.browser.open(request, data, timeout=self.request_timeout)

@@ -131,7 +131,6 @@ class ProxyChecking:
                         proxy_status = 'Anti-VPN Blocked'
 
             except Exception as e:
-
                 print(AnsiColours.fgWhite + 'Failed with Exception (Likely connectivity issue)', proxy, str(e) + AnsiColours.reset)
                 return
 
@@ -145,6 +144,4 @@ class ProxyChecking:
             loop.create_task(self.check_proxy(proxy, self.output_file))
 
 
-if __name__ == '__main__':
-    c = ProxyChecking()
 

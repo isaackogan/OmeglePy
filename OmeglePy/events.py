@@ -6,6 +6,7 @@ import time
 from urllib.request import Request
 
 import mechanize
+import requests
 
 from OmeglePy.utils import AnsiColours
 
@@ -45,32 +46,24 @@ class EventThread(threading.Thread):
 
         """
 
-        # Create a request
-        self.instance.browser.addheaders = self.instance.get_headers(self.start_url)
-        self.instance.browser.set_handle_robots(False)
-        request: Request = mechanize.Request(self.start_url)
+        self.instance.get_headers(self.start_url)
 
-        # Add a proxy (optional)
-        if self.proxy is not None:
-            request.set_proxy(self.proxy, self.proxy_type)
-
+        formatted_proxy = {self.proxy_type: self.proxy} if self.proxy is not None else None
 
         try:
 
             if self.debug:
 
-                print(AnsiColours.fgRed + '-> Outbound Request', request.full_url + AnsiColours.reset)
-                response = self.instance.browser.open(request)
-                data: dict = json.load(response)
+                print(AnsiColours.fgRed + '-> Outbound Request', self.start_url + AnsiColours.reset)
+                response = requests.get(self.start_url, proxies=formatted_proxy, headers=self.instance.get_headers())
+                data: dict = response.json()
                 print(AnsiColours.fgBlue + '<- Inbound Reply', str(data) + AnsiColours.reset)
 
             else:
-
-                response = self.instance.browser.open(request)
-                data: dict = json.load(response)
+                response = requests.get(self.start_url, proxies={self.proxy_type: self.proxy})
+                data: dict = response.json()
 
         except Exception as e:
-            raise e
             # Fail to get response
             print('Failed to initialize:', str(e))
             return
@@ -84,7 +77,7 @@ class EventThread(threading.Thread):
         except KeyError:
 
             # There were no events to handle (i.e we got blocked)
-            if not len(response.read()):
+            if not len(data):
                 print("(Blank server response) Error connecting to server. Please try again.")
                 print("If problem persists then your IP may be soft banned, try using a VPN.")
 
