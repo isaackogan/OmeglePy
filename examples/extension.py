@@ -16,20 +16,20 @@ bot = Bot()
 
 
 @commands.command(aliases=['next'])
-def skip(context):
-    bot.client.next()
+async def skip(context):
+    await bot.client.skip()
 
 
 @commands.command(aliases=['quit', 'exit'])
-def leave(context):
-    bot.client.disconnect()
+async def leave(context):
+    bot.client.stop()
     print('Disconnected!')
 
 
 @commands.command()
-def topics(context):
+async def topics(context):
     topics = context.args
-    bot.client.set_topics(topics)
+    await bot.client.set_topics(topics)
     print('New Topics:', topics)
 
 
