@@ -19,14 +19,11 @@ class Bot:
             prefix: str = "/",
             auto_skip: int = 0,
             handler=None,
-            auto_message: list or str = '',
-            auto_message_delay: float = 0,
-            proxy=None,
             **kwargs
     ):
 
         # Set the handler
-        self.handler: AbstractEventHandler = handler if handler is not None else EventHandler()
+        self.handler: AbstractEventHandler = handler
 
         # Create the client
         self.client = OmegleClient(self.handler, **kwargs)
@@ -103,7 +100,7 @@ class Bot:
             if name in k:
                 return (v['method'], v['attributes'])
 
-    def __execute_command(self, message: str):
+    async def __execute_command(self, message: str):
         message: str = message
         parsed_message: str = message.replace(self.prefix, '', 1)
         split_message = parsed_message.split(' ')
@@ -114,7 +111,10 @@ class Bot:
         command_tuple = self.__get_command(command_name)
 
         if command_tuple is None:
-            return message
+
+            # Not a command? Put it as a message and return
+            self.client.loop.create_task(self.client.write(message))
+            return
 
         context = Context(
             message,
@@ -122,7 +122,7 @@ class Bot:
             command_tuple[1]
         )
 
-        command_tuple[0](context)
+        await command_tuple[0](context)
 
     def run(self):
         """
@@ -130,10 +130,13 @@ class Bot:
 
         """
 
+        # Set up the commands
+        self.__setup()
+
         # Run the client (non-blocking)
         self.client.start()
 
-        while True:
+        while self.client.running:
             message = input().strip()
 
             # Not a Command -> Write the message
@@ -142,9 +145,8 @@ class Bot:
                 continue
 
             # Looks like a command -> Execute the command
-            result = self.__execute_command(message)
+            self.client.loop.create_task(self.__execute_command(message))
 
-            # Not a command -> Write the message
-            if result is not None:
-                self.client.loop.create_task(self.client.write(result))
+
+
 

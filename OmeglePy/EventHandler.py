@@ -127,6 +127,13 @@ class EventHandler(AbstractEventHandler):
         """
         cPrint('You updated your interests to %s' % data, self.WHITE)
 
+    async def clientSkip(self, data):
+        """
+        You skipped to the next person
+
+        """
+        cPrint('You skipped to the next person', self.WHITE)
+
     async def recaptchaRequired(self, data):
         cPrint('Received a captcha, stopping client. %s' % data, self.RED)
         self.instance.stop()
