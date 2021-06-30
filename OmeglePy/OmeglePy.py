@@ -8,30 +8,7 @@ from typing import List, Optional, Any, Callable, Union
 import aiohttp
 from asyncio import AbstractEventLoop, Task
 
-
-class AbstractEventHandler:
-    """
-    Abstract class for basic functionality required of an event handler.
-    Inherit from this when creating your custom event handlers!
-
-    """
-
-    def __init__(self):
-        self.instance = None
-        self.debug = False
-
-    def setup(self, instance, debug: bool):
-        self.instance = instance
-        self.debug = debug
-
-    async def strangerDisconnected(self, data):
-        """
-        Automatically move to the next person
-
-        """
-
-        await self.instance.disconnect()
-        await self.instance.connect()
+from OmeglePy.AbstractEventHandler import AbstractEventHandler
 
 
 class ThreadedOmegle(threading.Thread):
@@ -350,7 +327,6 @@ class OmeglePy:
             print("\033[32m" + '<- Event Loop Initialized ->' + "\033[0m")
 
         while self.running:
-            print('gg')
 
             if self.debug:
                 print("\033[35m" + '<- Event Loop Reached ->' + "\033[0m")

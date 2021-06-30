@@ -6,16 +6,16 @@ except ImportError:
 setup(
     name='OmeglePy',
     packages=['OmeglePy'],
-    version='1.0',
+    version='2.0',
     license='MIT',
     description='Interact with the Omegle API',
-    author='Isaac Kogan (Originally Elia Scotto)',
+    author='Isaac Kogan',
     author_email='isaacikogan@gmail.com',
     url='https://github.com/isaackogan/OmeglePy',
     download_url='https://github.com/isaackogan/OmeglePy/archive/refs/tags/v_1.0.tar.gz',
     keywords=['OmeglePy', 'Omegle', 'Omgle-Bot', 'Bot'],
     install_requires=[
-        'mechanize', 'asyncio', 'aiohttp'
+        'asyncio', 'aiohttp'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',  # "3 - Alpha", "4 - Beta", "5 - Production/Stable"

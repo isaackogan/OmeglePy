@@ -2,8 +2,7 @@ import asyncio
 import random
 from typing import Optional, Union, List
 
-from OmeglePyRewrite.EventHandler import EventHandler
-from OmeglePyRewrite.OmeglePy import OmeglePy, AbstractEventHandler
+from OmeglePy import OmeglePy, AbstractEventHandler
 
 
 class OmegleClient(OmeglePy):
@@ -132,7 +131,7 @@ class OmegleClient(OmeglePy):
 
         # Send an event with the # of connected users
         try:
-            await self._handle_event(['onlineCount', status['count']])
+            self.loop.create_task(self._handle_event(['onlineCount', status['count']]))
         except:
             pass
 
@@ -149,16 +148,6 @@ class OmegleClient(OmeglePy):
         self.topics = topics
         await self._handle_event(['clientChangedTopics', self.topics])
 
-
-if __name__ == '__main__':
-
-    client = OmegleClient(EventHandler(), topics=['tiktok'], proxy="http://45.114.88.6:80", debug=True)
-    client.start()
-
-    while True:
-
-        message = input()
-        client.loop.create_task(client.send(message))
 
 
 

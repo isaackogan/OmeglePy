@@ -6,24 +6,38 @@ from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Process
 from typing import List, Tuple, Any
 
-from OmeglePy.client import OmegleClient
-from OmeglePy.events import OmegleHandler
+from OmeglePy import EventHandler, AbstractEventHandler, OmegleClient
 from OmeglePy.ext.commands import Context, Command
 
 
 class Bot:
 
-    def __init__(self, prefix: str = "/", auto_skip: int = 0, auto_message: list or str = '', auto_message_delay: float = 0, proxy=None, **kwargs):
+    # TODO check if WPM is passed properly
 
-        # Create the stuff we need
-        self.handler = kwargs['handler'] if 'handler' in kwargs.keys() else OmegleHandler(auto_message=auto_message, auto_message_delay=auto_message_delay)
-        self.client = OmegleClient(self.handler, proxy=proxy, **kwargs)
+    def __init__(
+            self,
+            prefix: str = "/",
+            auto_skip: int = 0,
+            handler=None,
+            auto_message: list or str = '',
+            auto_message_delay: float = 0,
+            proxy=None,
+            **kwargs
+    ):
+
+        # Set the handler
+        self.handler: AbstractEventHandler = handler if handler is not None else EventHandler()
+
+        # Create the client
+        self.client = OmegleClient(self.handler, **kwargs)
 
         # Set attributes
-        self.session_time = 0
         self.prefix = prefix
         self.mappings = dict()
         self.auto_skip = auto_skip
+
+        # Bot Loop
+        self.loop_task = None
 
     @staticmethod
     def add_command(bot, function):
@@ -111,26 +125,26 @@ class Bot:
         command_tuple[0](context)
 
     def run(self):
+        """
+        The main bot loop responsible for executing client input.
 
-        self.__setup()
+        """
+
+        # Run the client (non-blocking)
         self.client.start()
 
         while True:
-            time.sleep(15)
-            self.client.next()
+            message = input().strip()
 
-        while True:
-
-            user_input = input().strip()
-
-            # Not a Command
-            if not self.__is_command(user_input):
-                self.client.write(user_input)
+            # Not a Command -> Write the message
+            if not self.__is_command(message):
+                self.client.loop.create_task(self.client.write(message))
                 continue
 
-            # Try a command
-            result = self.__execute_command(user_input)
+            # Looks like a command -> Execute the command
+            result = self.__execute_command(message)
 
-            # Not a command
+            # Not a command -> Write the message
             if result is not None:
-                self.client.write(result)
+                self.client.loop.create_task(self.client.write(result))
+

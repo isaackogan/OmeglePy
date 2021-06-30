@@ -68,7 +68,7 @@ class ProxyChecking:
 
                         # Proxy works
                         if 'connected' in events:
-                            cPrint(proxy + str(data), ProxyChecking.BGREEN)
+                            cPrint(proxy + " " + str(data), ProxyChecking.BGREEN)
 
                             # Append proxy to the file
                             with open(working_file, 'a') as file:

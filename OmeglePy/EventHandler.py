@@ -1,6 +1,6 @@
 from typing import Optional
 
-from OmeglePyRewrite.OmeglePy import AbstractEventHandler
+from OmeglePy.AbstractEventHandler import AbstractEventHandler
 
 
 def cPrint(string: str, ansi_colour: Optional[str] = None) -> None:

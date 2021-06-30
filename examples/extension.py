@@ -12,7 +12,7 @@ however it is all wrapped up nicely in a more readable format.
 
 
 
-bot = Bot(debug=False)
+bot = Bot()
 
 
 @commands.command(aliases=['next'])
