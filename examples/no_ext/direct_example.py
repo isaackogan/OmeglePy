@@ -1,3 +1,5 @@
+import asyncio
+
 from OmeglePy.client import OmegleClient
 from OmeglePy.events import OmegleHandler
 
@@ -12,6 +14,8 @@ interfaces directly with the client.
 
 c = OmegleClient(OmegleHandler(), wpm=47, lang='en')
 c.start()
+
+loop = asyncio.get_event_loop()
 
 while True:
 
