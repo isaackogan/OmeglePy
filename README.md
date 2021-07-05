@@ -10,7 +10,9 @@ Note: This project used to be based off of elias94's pyomegle, however I have si
 
 If you want to run more than 1 of this Bot at the same time and not get blocked by Omegle, I have
 a private project with the ability to scale this up through a combination of proxies and (other)
-private methods not included in this library. This is not public whatsoever and access to the repository
+private methods not included in this library. 
+
+This is not public whatsoever and access to the repository
 with the code can be purchased. This purchase includes *all* future changes to the code, so that you never
 have to worry about updating it yourself.
 
