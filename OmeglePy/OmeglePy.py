@@ -221,6 +221,7 @@ class OmeglePy:
         if isinstance(events, list):
 
             # Handle the events and return their results
+            # TODO Allow underscores, case insensitivity for method names in handler
             return [self.loop.create_task(self._handle_event(event)) for event in events]
 
         # If we got a dict back, there was a system error & we didn't get anything back at all

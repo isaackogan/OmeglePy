@@ -27,7 +27,7 @@ class EventHandler(AbstractEventHandler):
 
     async def systemError(self, data):
         """
-        When a critical error happens & an event can't be retrieved (usually means Omegle's servers are down)
+        When a critical error happens & an event can't be retrieved
 
         """
 

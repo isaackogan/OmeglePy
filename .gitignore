@@ -5,3 +5,5 @@ OmeglePy.egg-info
 venv/
 spambot/
 threaded/
+make.bat
+Makefile
