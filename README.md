@@ -8,4 +8,7 @@ Note: This project used to be based off of elias94's pyomegle, however I have si
 
 # Are you looking to run more than one?
 
-I have a private project that scales this up (and is maintained) for multiple instances. Contact for purchase.
+I have a private project that scales this up (and is maintained) for multiple instances.
+This means you can run 5, 10, 15, 20 instances of the Bot with no issue. This is not 
+public and access to the repository (and all future updates) can be purchased.
+Join the support discord and DM fallen#9745 for inquiries into this.
