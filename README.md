@@ -81,7 +81,7 @@ List of events accessible by the default provided ``EventHandler``.
 * **antinudeBanned** - When the server sends an antinude ban (You got Blocked!)
 * **softBanned** - When the server sends no data back (You got Blocked!)
 
-Inherit the ``AbstractEventHandler`` class to implement your own custom events, or (my suggestion) inheret the ``EventHandler`` class and just edit specific events you want different from the ones already handled. Remember, you can add on by calling the super of that method too, instead of copy-pasting code ``await super(SpintaxHandler, self).<method_name>(data)`` if you're trying to add to a handled event instead of edit it.
+Inherit the ``AbstractEventHandler`` class to implement your own custom events, or (my suggestion) inheret the ``EventHandler`` class and just edit specific events you want different from the ones already handled. Remember, you can add on by calling the super of that method too, instead of copy-pasting code ``await super(EventHandler, self).<method_name>(data)`` if you're trying to add to a handled event instead of edit it.
 
 ``` python
 class MyCustomHandler(EventHandler):
