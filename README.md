@@ -13,7 +13,7 @@ a private project with the ability to scale this up through a combination of pro
 private methods not included in this library. 
 
 This is not public whatsoever and access to the repository
-with the code can be purchased. This purchase includes *all* future changes to the code, so that you never
+with the code can be purchased. This purchase includes *all* future changes necessary as I update the OmeglePy library, so that you never
 have to worry about updating it yourself.
 
 Join the support discord and DM fallen#9745 for inquiries into this.
