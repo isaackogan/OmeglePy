@@ -2,27 +2,25 @@ OmeglePy
 ==================
 Python API for Omegle. Compatible with Python 3. This is an unofficial api wrapper for the popular WebChat service Omegle, written in Python. With this API you can basically fully interact with Omegle as a regular user.
 
- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/isaac-kogan-5a45b9193/ ) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/isaackogan/OmeglePy)](https://github.com/isaackogan/PyOmegle/releases) ![Issues](https://img.shields.io/github/issues/isaackogan/OmeglePy) [![GitHub](https://img.shields.io/github/license/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/blob/master/LICENSE) [![Downloads](https://pepy.tech/badge/omeglepy)](https://pepy.tech/project/omeglepy)  ![visitors](https://visitor-badge.laobi.icu/badge?page_id=isaackogan.omeglepy) [![Support Server](https://img.shields.io/discord/783108952111579166.svg?color=7289da&logo=discord&style=flat-square)](https://discord.gg/kaX9H65VhG)
+ [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/isaac-kogan-5a45b9193/ ) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/releases) ![Issues](https://img.shields.io/github/issues/isaackogan/OmeglePy) [![GitHub](https://img.shields.io/github/license/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/blob/master/LICENSE) [![Downloads](https://pepy.tech/badge/omeglepy)](https://pepy.tech/project/omeglepy)  ![visitors](https://visitor-badge.laobi.icu/badge?page_id=isaackogan.omeglepy) [![Support Server](https://img.shields.io/discord/655522419460669481.svg?color=7289da&logo=discord&style=flat-square)](https://discord.gg/kaX9H65VhG)
  
  ## Are you looking to run more than one?
 
-If you want to run more than 1 of this Bot at the same time and not get blocked by Omegle, I have
+If you want to run ``more than 1 client`` at the same time and not get blocked by Omegle, I have
 a private project with the ability to scale this up through a combination of proxies and (other)
 private methods not included in this library. 
 
-This is not public whatsoever and access to the repository
-with the code can be purchased. This purchase includes *all* future changes necessary as I update the OmeglePy library, so that you never
-have to worry about updating it yourself.
+This is ``not public`` whatsoever and access to the repository with the code can be purchased. This purchase includes *all* future changes necessary as I update the OmeglePy library, so that you never have to worry about updating it yourself.
 
-Join the support discord and DM fallen#9745 for inquiries into this.
+Join the support discord and DM ``fallen#9745`` for inquiries into this.
 
 ## Table of Contents
 - [Installation](#installation)
 - [Quick Start Guide](#quick-start-guide)
     - [Examples](#examples)
     - [Events](#events)
-    - [OmegleClient](#omegleclient)
-    - [OmeglePy](#omeglepy)
+    - [OmegleClient](#omegleclient-inherits-omeglepy)
+    - [OmeglePy](#omeglepy-1)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -94,7 +92,7 @@ class MyCustomHandler(EventHandler):
         Run what the inherited handler does, but also send a message...
         """
         await super(EventHandler, self).connected(data)
-        await self.instance.send('You should know, I'm super cool...)
+        await self.instance.send('You should know, I'm super cool...')
     
     async def softBanned(self, data):
         """
