@@ -14,7 +14,7 @@ This is ``not public`` whatsoever and access to the repository with the code can
 
 Join the support discord and DM ``fallen#9745`` for inquiries into this.
 
-## Table of Contents
+# Table of Contents
 - [Installation](#installation)
 - [Quick Start Guide](#quick-start-guide)
     - [Examples](#examples)
