@@ -33,6 +33,7 @@ class EventHandler(AbstractEventHandler):
 
         cPrint('Critical error when retrieving events %s' % data, self.RED)
 
+
     async def statusInfo(self, data):
         """
         Received status info from the server
@@ -135,5 +136,29 @@ class EventHandler(AbstractEventHandler):
         cPrint('You skipped to the next person', self.WHITE)
 
     async def recaptchaRequired(self, data):
+        """
+        You were captcha blocked
+
+        """
         cPrint('Received a captcha, stopping client. %s' % data, self.RED)
+        self.instance.stop()
+
+    async def antinudeBanned(self, data):
+        """
+        You were anti-nude banned
+
+        """
+        cPrint('Received an anti-nude ban status, stopping client. %s' % data, self.RED)
+        self.instance.stop()
+
+    async def softBanned(self, data):
+        """
+        You were soft-banned and so no response was sent from the server
+
+        """
+        cPrint(
+            "(Blank server response) Error connecting to server. Please try again.\n"
+            "If problem persists then your IP may be soft banned, try using a VPN.",
+            self.RED
+        )
         self.instance.stop()

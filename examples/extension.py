@@ -10,8 +10,6 @@ however it is all wrapped up nicely in a more readable format.
 
 """
 
-
-
 bot = Bot()
 
 

@@ -4,3 +4,4 @@ dist/
 OmeglePy.egg-info
 venv/
 spambot/
+threaded/

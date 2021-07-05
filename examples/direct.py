@@ -1,6 +1,6 @@
 from OmeglePy import OmegleClient, EventHandler
 
-client = OmegleClient(EventHandler(), topics=['tiktok'], proxy="http://45.114.88.6:80", debug=True)
+client = OmegleClient(EventHandler(), topics=['tiktok'], debug=True)
 client.start()
 
 while True:

@@ -12,8 +12,6 @@ from OmeglePy.ext.commands import Context, Command
 
 class Bot:
 
-    # TODO check if WPM is passed properly
-
     def __init__(
             self,
             prefix: str = "/",

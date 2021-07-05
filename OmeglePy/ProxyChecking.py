@@ -1,13 +1,13 @@
 import asyncio
 import random
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any
 
 import aiohttp
 from asyncio import AbstractEventLoop
 
 
-def cPrint(string: str, ansi_colour: Optional[str] = None) -> None:
-    print(ansi_colour + string + "\033[0m" + ProxyChecking.RESET if ansi_colour else string)
+def cPrint(key: Any, string: str, ansi_colour: Optional[str] = None) -> None:
+    print(ansi_colour, key, string + "\033[0m" + ProxyChecking.RESET if ansi_colour else string)
 
 
 class ProxyChecking:
@@ -32,22 +32,23 @@ class ProxyChecking:
         self.output_file: str = output_file
 
         # Read the proxy file to get your proxies
-        self.proxies = ['http://' + proxy.strip() for proxy in open('proxies.txt').read().strip().split('\n')]
+        self.proxies = list(set(['http://' + proxy.strip() for proxy in open('proxies.txt').read().strip().split('\n')]))
 
     @staticmethod
-    async def check_proxy(proxy: str, working_file: str) -> Tuple[str, bool]:
+    async def check_proxy(proxy: str, working_file: str, key: int) -> Tuple[str, bool]:
         """
         Check a singular proxy
 
         :param proxy: The proxy to check
         :param working_file: The file to output its status
+        :param key: The current task/process number this check represents
 
         """
 
         async with aiohttp.ClientSession() as session:
 
             # Status Message
-            cPrint('Testing %s' % proxy, ProxyChecking.WHITE)
+            cPrint(key, 'Testing %s' % proxy, ProxyChecking.WHITE)
 
             # Generate the URL
             check_url: str = "http://" + random.choice(ProxyChecking.SERVER_LIST) + "/start?caps=recaptcha2,t&firstevents=1&spid=&randid=T7RY4HL6&lang=en"
@@ -68,7 +69,7 @@ class ProxyChecking:
 
                         # Proxy works
                         if 'connected' in events:
-                            cPrint(proxy + " " + str(data), ProxyChecking.BGREEN)
+                            cPrint(key, proxy + " " + str(data), ProxyChecking.BGREEN)
 
                             # Append proxy to the file
                             with open(working_file, 'a') as file:
@@ -77,15 +78,15 @@ class ProxyChecking:
 
                             return proxy, True
 
-                        cPrint(proxy + str(events), ProxyChecking.WHITE)
+                        cPrint(key, proxy + str(events), ProxyChecking.WHITE)
                         return proxy, False
 
                     except KeyError:
-                        cPrint(proxy + 'Anti-VPN Blocked', ProxyChecking.WHITE)
+                        cPrint(key, proxy + 'Anti-VPN Blocked', ProxyChecking.WHITE)
                         return proxy, False
 
             except:
-                cPrint(proxy + 'Proxy Timed Out', ProxyChecking.WHITE)
+                cPrint(key, proxy + ' Proxy Timed Out', ProxyChecking.WHITE)
                 return proxy, False
 
     def check_proxies(self):
@@ -97,7 +98,7 @@ class ProxyChecking:
         """
 
         loop: AbstractEventLoop = asyncio.get_event_loop()
-        return [loop.create_task(self.check_proxy(proxy, self.output_file)) for proxy in self.proxies]
+        return [loop.create_task(self.check_proxy(proxy, self.output_file, key)) for key, proxy in enumerate(self.proxies)]
 
 
 

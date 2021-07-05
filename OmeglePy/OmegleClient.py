@@ -11,7 +11,7 @@ class OmegleClient(OmeglePy):
 
     """
 
-    def __init__(self, event_handler: AbstractEventHandler, wpm: Optional[int] = 42, **kwargs) -> None:
+    def __init__(self, event_handler: AbstractEventHandler, wpm: Optional[int] = 42, get_status=True, **kwargs) -> None:
         """
 
         :param event_handler: The event handler to run the client with
@@ -20,7 +20,12 @@ class OmegleClient(OmeglePy):
 
         """
         super().__init__(event_handler, **kwargs)
+
         self.wpm: int = wpm
+        self.get_status: bool = get_status
+
+        # Is it the first connection
+        self.first: bool = True
 
     def _typing_time(self, length: int) -> float:
         """
@@ -56,17 +61,23 @@ class OmegleClient(OmeglePy):
         if not len(text):
             return
 
+        cached_uuid: str = str(self.uuid)
+
         # Start typing
         await self.typing()
 
         # Sleep the proper amount necessary to write the message
         await asyncio.sleep(self._typing_time(len(text)))
 
-        # Send the message
-        await self.send(text)
+        if self.uuid == cached_uuid:
 
-        # Stop typing
-        await self.stop_typing()
+            # Send the message
+            await self.send(text)
+
+            # Stop typing
+            await self.stop_typing()
+        else:
+            print('failed')
 
     async def send(self, text: str) -> None:
         """
@@ -120,23 +131,6 @@ class OmegleClient(OmeglePy):
 
         return await self._request(url)
 
-    async def connect(self) -> str:
-        """
-        Override the main method to introduce a QOL connected user count
-
-        """
-
-        # Get the status
-        status = await self.status()
-
-        # Send an event with the # of connected users
-        try:
-            self.loop.create_task(self._handle_event(['onlineCount', status['count']]))
-        except:
-            pass
-
-        return await super(OmegleClient, self).connect()
-
     async def set_topics(self, topics: List[str]):
         """
         Set your client's topics
@@ -148,6 +142,25 @@ class OmegleClient(OmeglePy):
         self.topics = topics
         await self._handle_event(['clientChangedTopics', self.topics])
 
+    async def connect(self) -> str:
+        """
+        Override the main method to introduce a QOL connected user count
 
+        """
 
+        # If they want the status
+        if self.get_status and self.first:
+
+            # Get the status
+            status = await self.status()
+
+            # Send an event with the # of connected users
+            try:
+                self.loop.create_task(self._handle_event(['onlineCount', status['count']]))
+            except:
+                pass
+
+        self.first = False
+
+        return await super(OmegleClient, self).connect()
 

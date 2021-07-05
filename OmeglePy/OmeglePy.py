@@ -3,10 +3,13 @@ import random
 import threading
 import urllib
 import json
+import uuid
 from typing import List, Optional, Any, Callable, Union
 
 import aiohttp
 from asyncio import AbstractEventLoop, Task
+
+from aiohttp import ClientTimeout, TCPConnector
 
 from OmeglePy.AbstractEventHandler import AbstractEventHandler
 
@@ -65,7 +68,10 @@ class OmeglePy:
             debug: Optional[bool] = False,
             proxy: Optional[str] = None,
             mobile: Optional[bool] = False,
-            unmonitored: Optional[bool] = False
+            unmonitored: Optional[bool] = False,
+            display_unhandled_events: Optional[bool] = True,
+            socket_connect_timeout: Optional[int] = 15,
+            socket_read_timeout: Optional[int] = 40
     ):
         """
         Create an instance of the omegle client
@@ -80,6 +86,8 @@ class OmeglePy:
         :param proxy: An optional proxy if you want one of those
         :param mobile: Whether or not to connect as a mobile client
         :param unmonitored: Whether or not to enter the unmonitored section
+        :param socket_connect_timeout: The max time (seconds) to connect to the socket during a request
+        :param socket_read_timeout: The max time (seconds) to read from a socket during a request
 
         """
 
@@ -98,6 +106,9 @@ class OmeglePy:
         self.unmonitored: bool = unmonitored
         self.debug: bool = debug
         self.topics: Optional[List[str]] = None if not topics else topics
+        self.display_unhandled: bool = display_unhandled_events
+        self.socket_read_timeout: int = socket_read_timeout
+        self.socket_connect_timeout: int = socket_connect_timeout
 
         # Auto-updated variables for caching
         self.task: Optional[Task] = None
@@ -106,9 +117,11 @@ class OmeglePy:
         self.thread: Optional[threading.Thread] = None
         self.connected: bool = False
         self.running: bool = False
+        self.uuid: Optional[str] = None
+        self.sep: Any = asyncio.Semaphore(10)  # 10 is the initial resource count for the Semaphore
 
     @staticmethod
-    def __get_headers(url: str, tld: str) -> dict:
+    def __get_headers(url: str, tld: str, mobile: bool = False) -> dict:
         """
         Generate headers for a URL to better masquerade as a user
 
@@ -128,7 +141,11 @@ class OmeglePy:
             "Accept-Encoding": "gzip, deflate",
             "Connection": "keep-alive",
             "Host": url[url.find("//") + 2:url.find(tld) + len(tld)],
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+                if not mobile else
+                "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36"
+            )
 
         }
 
@@ -148,17 +165,34 @@ class OmeglePy:
         if self.debug:
             print("\033[31m" + '-> Outbound Request', url + "\033[0m")
 
-        # Create an aiohttp client session
-        async with aiohttp.ClientSession() as session:
+        # Cache the proxy (for logging, in case it changes)
+        cached_current_proxy: str = str(self.proxy)
 
-            request = session.get if data is None else session.post
+        try:
 
-            # noinspection PyArgumentList
-            async with request(url, proxy=self.proxy, data=data, headers=self.__get_headers(url, '.com')) as result:
-                try:
-                    response = await result.json()
-                except:
-                    response = {'response': await result.text()}
+            # Set a timeout for the request to prevent A) Timing out the Semaphore and B) just generally creating stalled requests
+            session_timeout: ClientTimeout = aiohttp.ClientTimeout(total=None, sock_connect=self.socket_connect_timeout, sock_read=self.socket_read_timeout)
+
+            # Force it to close the TCP connection after each request
+            connector: TCPConnector = aiohttp.TCPConnector(force_close=True)
+
+            # Using the Semaphore
+            async with self.sep:
+
+                # Create an aiohttp client session
+                async with aiohttp.ClientSession(connector=connector, timeout=session_timeout) as session:
+                    request = session.get if data is None else session.post
+
+                    # noinspection PyArgumentList
+                    async with request(url, proxy=cached_current_proxy, data=data, headers=self.__get_headers(url, '.com', self.mobile)) as result:
+                        try:
+                            response = await result.json()
+                        except:
+                            response = {'response': await result.text(), 'url': url}
+
+        # Request failed & an error was thrown
+        except Exception as e:
+            return {'response': '500', 'error': str(e), 'url': url, 'proxy': cached_current_proxy}
 
         # Debug Inbound
         if self.debug:
@@ -187,7 +221,7 @@ class OmeglePy:
         if isinstance(events, list):
 
             # Handle the events and return their results
-            return [await self._handle_event(event) for event in events]
+            return [self.loop.create_task(self._handle_event(event)) for event in events]
 
         # If we got a dict back, there was a system error & we didn't get anything back at all
         if isinstance(events, dict):
@@ -244,7 +278,9 @@ class OmeglePy:
         try:
             return getattr(handler, event_name)
         except:
-            print(f"Unhandled event \"{event_name}\"" + (f" with data \"{event_data}\"" if event_data is not None else ""))
+
+            if self.display_unhandled:
+                print(f"Unhandled event \"{event_name}\"" + (f" with data \"{event_data}\"" if event_data is not None else ""))
 
     async def connect(self) -> str:
         """
@@ -276,13 +312,17 @@ class OmeglePy:
         if self.topics:
             # noinspection PyUnresolvedReferences
             start_url += '&' + urllib.parse.urlencode({'topics': json.dumps(self.topics)})
-
         # If they want to be in unmon chat
         if self.unmonitored:
             start_url += '&group=unmon'
 
+        cached_current_proxy: str = str(self.proxy)
+
         # Get the initial reply
         result: Any = await self._request(start_url)
+
+        # Update the ID
+        self.uuid = str(uuid.uuid4())
 
         # Set the client ID for future requests (used as authentication)
         # and manage the events we got from this one
@@ -294,8 +334,7 @@ class OmeglePy:
         except KeyError:
 
             if not len(result):
-                print("(Blank server response) Error connecting to server. Please try again.")
-                print("If problem persists then your IP may be soft banned, try using a VPN.")
+                await self._handle_event(['softBanned',  {'response': '500', 'error': 'softBanned', 'url': start_url, 'proxy': cached_current_proxy}])
 
         # Return the client ID
         return self.client_id
@@ -359,8 +398,13 @@ class OmeglePy:
 
         """
 
-        self.thread = ThreadedOmegle(self)
-        self.thread.start()
+        try:
+            self.thread = ThreadedOmegle(self)
+            self.thread.start()
+        except:
+            print('Thread failure')
+
+        return self
 
     def stop(self):
         """
