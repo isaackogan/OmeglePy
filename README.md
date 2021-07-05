@@ -21,7 +21,7 @@ Join the support discord and DM ``fallen#9745`` for inquiries into this.
     - [Events](#events)
     - [OmegleClient](#omegleclient-inherits-omeglepy)
     - [OmeglePy](#omeglepy-1)
-- [License](#license)
+- [Project License](#license)
 
 # Installation
 
