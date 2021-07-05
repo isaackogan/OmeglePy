@@ -21,7 +21,6 @@ Join the support discord and DM ``fallen#9745`` for inquiries into this.
     - [Events](#events)
     - [OmegleClient](#omegleclient-inherits-omeglepy)
     - [OmeglePy](#omeglepy-1)
-- [Documentation](#documentation)
 - [License](#license)
 
 # Installation
@@ -119,7 +118,7 @@ class MyCustomHandler(EventHandler):
 * **socket_connect_timeout=15** - The max time (seconds) to connect to the socket during a request
 * **socket_read_timeout=45** - The max time (seconds) to read from a socket during a request
 
-Visit the provided documentation for a list of methods.
+Visit the provided documentation (included directly via DocStrings) for a list of methods.
 
 ## OmegleClient (Inherits OmeglePy)
 
@@ -128,7 +127,7 @@ Visit the provided documentation for a list of methods.
 * **get_status=True** for to get the # of online people on the first connection
 * **wpm=42** set the ``words per minutes`` typing speed
 
-Visit the provided documentation for a list of methods.
+Visit the provided documentation (included directly via DocStrings) for a list of methods.
 
 # License
 pyomegle is released under the [MIT License](LICENSE).
