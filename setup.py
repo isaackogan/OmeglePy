@@ -6,7 +6,7 @@ except ImportError:
 setup(
     name='OmeglePy',
     packages=['OmeglePy'],
-    version='2.1',
+    version='2.2',
     license='MIT',
     description='Interact with the Omegle API',
     author='Isaac Kogan',
@@ -18,13 +18,12 @@ setup(
         'asyncio', 'aiohttp'
     ],
     classifiers=[
-        'Development Status :: 3 - Alpha',  # "3 - Alpha", "4 - Beta", "5 - Production/Stable"
+        'Development Status :: 4 - Alpha',  # "3 - Alpha", "4 - Beta", "5 - Production/Stable"
         'Intended Audience :: Developers',  # Define that your audience are developers
         'Topic :: Communications :: Chat',
         'Operating System :: POSIX',
         'License :: OSI Approved :: MIT License',  # Again, pick a license
         'Programming Language :: Python',  # Specify which Python versions that you want to support
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
     ],
     zip_safe=False
