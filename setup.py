@@ -18,7 +18,7 @@ setup(
         'asyncio', 'aiohttp'
     ],
     classifiers=[
-        'Development Status :: 4 - Alpha',  # "3 - Alpha", "4 - Beta", "5 - Production/Stable"
+        'Development Status :: 4 - Beta',  # "3 - Alpha", "4 - Beta", "5 - Production/Stable"
         'Intended Audience :: Developers',  # Define that your audience are developers
         'Topic :: Communications :: Chat',
         'Operating System :: POSIX',
