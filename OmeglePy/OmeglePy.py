@@ -166,7 +166,7 @@ class OmeglePy:
             print("\033[31m" + '-> Outbound Request', url + "\033[0m")
 
         # Cache the proxy (for logging, in case it changes)
-        cached_current_proxy: str = str(self.proxy)
+        cached_current_proxy: str = str(self.proxy) if self.proxy is not None else None
 
         try:
 

@@ -10,7 +10,7 @@ while True:
     
     # Go to the next person
     if message.lower() == "/next":
-        client.loop.creatae_task(client.skip())
+        client.loop.create_task(client.skip())
         continue
     
     # Send a message
