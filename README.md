@@ -14,15 +14,14 @@ This is ``not public`` whatsoever and access to the repository with the code can
 
 Join the support discord and DM ``fallen#9745`` for inquiries into this.
 
-## Table of Contents
+# Table of Contents
 - [Installation](#installation)
 - [Quick Start Guide](#quick-start-guide)
     - [Examples](#examples)
     - [Events](#events)
     - [OmegleClient](#omegleclient-inherits-omeglepy)
     - [OmeglePy](#omeglepy-1)
-- [Documentation](#documentation)
-- [License](#license)
+- [Project License](#license)
 
 # Installation
 
@@ -82,7 +81,7 @@ List of events accessible by the default provided ``EventHandler``.
 * **antinudeBanned** - When the server sends an antinude ban (You got Blocked!)
 * **softBanned** - When the server sends no data back (You got Blocked!)
 
-Inherit the ``AbstractEventHandler`` class to implement your own custom events, or (my suggestion) inheret the ``EventHandler`` class and just edit specific events you want different from the ones already handled. Remember, you can add on by calling the super of that method too, instead of copy-pasting code ``await super(SpintaxHandler, self).<method_name>(data)`` if you're trying to add to a handled event instead of edit it.
+Inherit the ``AbstractEventHandler`` class to implement your own custom events, or (my suggestion) inheret the ``EventHandler`` class and just edit specific events you want different from the ones already handled. Remember, you can add on by calling the super of that method too, instead of copy-pasting code ``await super(EventHandler, self).<method_name>(data)`` if you're trying to add to a handled event instead of edit it.
 
 ``` python
 class MyCustomHandler(EventHandler):
@@ -119,7 +118,7 @@ class MyCustomHandler(EventHandler):
 * **socket_connect_timeout=15** - The max time (seconds) to connect to the socket during a request
 * **socket_read_timeout=45** - The max time (seconds) to read from a socket during a request
 
-Visit the provided documentation for a list of methods.
+Visit the provided documentation (included directly via DocStrings) for a list of methods.
 
 ## OmegleClient (Inherits OmeglePy)
 
@@ -128,7 +127,7 @@ Visit the provided documentation for a list of methods.
 * **get_status=True** for to get the # of online people on the first connection
 * **wpm=42** set the ``words per minutes`` typing speed
 
-Visit the provided documentation for a list of methods.
+Visit the provided documentation (included directly via DocStrings) for a list of methods.
 
 # License
 pyomegle is released under the [MIT License](LICENSE).
