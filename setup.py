@@ -3,13 +3,13 @@ from setuptools import setup, find_packages
 setup(
     name='OmeglePy',
     packages=find_packages(),
-    version='2.2',
+    version='2.3',
     license='MIT',
     description='Interact with the Omegle API',
     author='Isaac Kogan',
     author_email='isaacikogan@gmail.com',
     url='https://github.com/isaackogan/OmeglePy',
-    download_url='https://github.com/isaackogan/OmeglePy/archive/refs/tags/v_2.2.tar.gz',
+    download_url='https://github.com/isaackogan/OmeglePy/archive/refs/tags/v_2.3.tar.gz',
     keywords=['OmeglePy', 'Omegle', 'Omgle-Bot', 'Bot'],
     install_requires=[
         'asyncio', 'aiohttp'
