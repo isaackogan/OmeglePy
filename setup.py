@@ -1,11 +1,8 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='OmeglePy',
-    packages=['OmeglePy'],
+    packages=find_packages(),
     version='2.2',
     license='MIT',
     description='Interact with the Omegle API',
