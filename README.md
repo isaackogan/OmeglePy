@@ -1,5 +1,4 @@
 OmeglePy (NON-OPERABLE)
-
 ==================
 Python API for Omegle. Compatible with Python 3. This is an unofficial api wrapper for the popular WebChat service Omegle, written in Python. With this API you can basically fully interact with Omegle as a regular user.
 
