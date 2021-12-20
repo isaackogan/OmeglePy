@@ -4,7 +4,7 @@ Python API for Omegle. Compatible with Python 3. This is an unofficial api wrapp
 
 Note: I'm aware this API is in a bit of a state of disrepair. Fixes coming when I have the time!
 
- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/isaac-kogan-5a45b9193/ ) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/releases) ![Issues](https://img.shields.io/github/issues/isaackogan/OmeglePy) [![GitHub](https://img.shields.io/github/license/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/blob/master/LICENSE) [![Downloads](https://pepy.tech/badge/omeglepy)](https://pepy.tech/project/omeglepy) [![Support Server](https://img.shields.io/discord/922231395605159987](https://discord.gg/KDqHBrZ2Yn)
+ [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/isaac-kogan-5a45b9193/ ) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/releases) ![Issues](https://img.shields.io/github/issues/isaackogan/OmeglePy) [![GitHub](https://img.shields.io/github/license/isaackogan/OmeglePy)](https://github.com/isaackogan/OmeglePy/blob/master/LICENSE) [![Downloads](https://pepy.tech/badge/omeglepy)](https://pepy.tech/project/omeglepy) [![Support Server](https://img.shields.io/discord/922231395605159987)](https://discord.gg/KDqHBrZ2Yn)
  
 # Table of Contents
 - [Installation](#installation)
